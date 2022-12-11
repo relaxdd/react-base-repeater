@@ -1,0 +1,52 @@
+.wrapper {
+
+}
+
+.header {
+  display: flex;
+  border-color: #ccd0d4;
+  border-width: 1px 1px 0 1px;
+  border-style: solid;
+}
+
+.inner {
+  display: block;
+  padding: 10px 0;
+
+  &:nth-child(1),
+  &:nth-child(3) {
+    flex: 0 0 5%;
+    max-width: 5%;
+  }
+
+  &:nth-child(2) {
+    flex: 0 0 90%;
+    max-width: 90%;
+    color: #333333;
+    font-size: 15px;
+    padding-left: 7.5px;
+    padding-right: 7.5px;
+  }
+
+  &:nth-child(1) {
+    border-right: #d5d9dd solid 1px;
+  }
+
+  &:nth-child(3) {
+    border-left: #d5d9dd solid 1px;
+  }
+}
+
+.required {
+  color: #f00;
+}
+
+.elements {
+  border: #ccd0d4 solid 1px;
+  margin-bottom: 15px;
+}
+
+.button {
+  display: flex;
+  justify-content: flex-end;
+}

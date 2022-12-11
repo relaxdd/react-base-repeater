@@ -1,0 +1,123 @@
+%floating-action {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  border: #b5bcc2 1px solid;
+  color: #555d66;
+  border-radius: 100%;
+  width: 22px;
+  height: var(--actions-height);
+  line-height: 13px;
+  font-size: 13px;
+  cursor: pointer;
+  background: #fff;
+  position: absolute;
+  // margin-top: calc((var(--actions-height) / 2) * -1);
+  margin-top: var(--actions-gap);
+  z-index: 999;
+}
+
+.root {
+  --vertical-gap: 10px;
+  --vertical-border: #eeeeee solid 1px;
+  --actions-height: 21px;
+  --actions-gap: 5px;
+
+  display: flex;
+  flex-direction: row;
+  max-height: 100%;
+  overflow-y: hidden;
+
+  &:not(:last-child) {
+    border-bottom: var(--vertical-border);
+  }
+
+  &:hover > .right > span,
+  &:hover > .left > .hide {
+    display: inline-flex;
+  }
+
+  &.hidden {
+    > .left > .hide {
+      display: inline-flex;
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 5%;
+  max-width: 5%;
+  background: #f4f4f4;
+  text-shadow: #fff 0 1px 0;
+  padding: var(--vertical-gap) 0;
+  border-right: #DFDFDF solid 1px;
+  position: relative;
+}
+
+.count {
+  color: #aaa;
+}
+
+.hide {
+  @extend %floating-action;
+  top: 0;
+  font-size: 15px;
+  transition: transform 0.2s ease-out;
+
+  &:hover {
+    background: #f3f5f6;
+    border-color: #0071a1;
+    color: #0071a1;
+  }
+}
+
+.field {
+  padding: var(--vertical-gap) 7.5px;
+  flex: 0 0 90%;
+  max-width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.right {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: center;
+  row-gap: var(--actions-gap);
+  flex: 0 0 5%;
+  max-width: 5%;
+  background: #F9F9F9;
+  border-left: #DFDFDF solid 1px;
+  position: relative;
+
+  > span {
+    @extend %floating-action;
+    font-size: 11px;
+  }
+
+  &_plus {
+    top: 0;
+
+    &:hover {
+      background: #f3f5f6;
+      border-color: #0071a1;
+      color: #0071a1;
+    }
+  }
+
+  &_minus {
+    top: calc(var(--actions-height) + var(--actions-gap));
+
+    &:hover {
+      background: #f7efef;
+      border-color: #a10000;
+      color: #dc3232;
+    }
+  }
+}
