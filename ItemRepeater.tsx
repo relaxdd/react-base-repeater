@@ -1,7 +1,7 @@
+import { Arrayable } from "../../index";
+import scss from "./ItemRepeater.module.scss";
 import { useEffect, useRef, useState } from "react";
-import scss from "./scss/ItemRepeater.module.scss";
-import useDidUpdateEffect from "./hooks/useDidUpdateEffect";
-import { Arrayable } from "./types";
+import useDidUpdateEffect from "../../hooks/useDidUpdateEffect";
 
 export enum RepeatActions {
   ADD = "add",
