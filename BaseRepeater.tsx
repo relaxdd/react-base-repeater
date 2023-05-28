@@ -1,9 +1,9 @@
-import scss from "./scss/Repeater.module.scss";
+import style from "./Repeater.module.scss";
 import ItemRepeater, { OnHideItemRepeater, RepeatActions, RepeaterReducer } from "./ItemRepeater";
-import { SomeObject } from "./types";
-import { removeElementByKey } from "./utils";
-import { useEffect } from "react";
-import CompareData from "./class/CompareData";
+import { SomeObject } from "types";
+import { getTypedKeys, removeElementByKey } from "helpers/utils";
+import React, { useEffect } from "react";
+import CompareData from "../../class/CompareData";
 
 type RepeaterDispatch<T> = (key: keyof T, value: any, index: number) => void
 type BaseTypes = "string" | "boolean" | "array";
@@ -11,20 +11,22 @@ type AllowedTypes = string | boolean | any[];
 type ListOfTypes<T = SomeObject> = { [key in keyof T]: BaseTypes; };
 
 interface BaseRepeaterProps<T> {
-  data: Array<T>;
-  baseKeys: (keyof T)[];
-  onChange: (list: T[]) => void;
-  onRender: (state: [T, RepeaterDispatch<T>], i: number) => JSX.Element | JSX.Element[];
-  title?: string;
-  onHideItem?: OnHideItemRepeater;
-  onMount?: () => void;
-  textConfirmDeleteItem?: string;
-  id?: string;
-  baseTypes?: ListOfTypes<T>;
+  data: Array<T>,
+  baseKeys: (keyof T)[],
+  onChange: (list: T[]) => void,
+  onRender: (state: [T, RepeaterDispatch<T>], i: number) => JSX.Element | JSX.Element[],
+  title?: string,
+  onHideItem?: OnHideItemRepeater,
+  onMount?: (() => void),
+  textConfirmDeleteItem?: string,
+  id?: string,
+  baseTypes?: ListOfTypes<T>,
+  asForm?: boolean,
+  onSubmit?: ((e: React.FormEvent<HTMLFormElement>) => void),
+  submitDisabled?: boolean
 }
 
-// TODO: Сделать проверку на кол-во элементов и если 1 то не покалывать скрывашку
-function BaseRepeater<T extends Object>(
+function ListRepeater<T extends Object>(
   {
     title,
     data,
@@ -36,6 +38,9 @@ function BaseRepeater<T extends Object>(
     id,
     baseTypes,
     onMount,
+    asForm,
+    onSubmit,
+    submitDisabled
   }: BaseRepeaterProps<T>,
 ) {
   const ls = "__osvetilo_admin_hidden";
@@ -139,7 +144,7 @@ function BaseRepeater<T extends Object>(
   function isFieldEmpty(index: number): boolean {
     baseTypes = baseTypes || defaultTypes();
 
-    return (Object.keys(data[index]) as (keyof T)[]).every((key) => {
+    return getTypedKeys(data[index]).every((key) => {
       return CompareData.isEquals(data[index][key], getDefaultValue(baseTypes![key]))
     });
   }
@@ -238,7 +243,7 @@ function BaseRepeater<T extends Object>(
     const deleteItem = () => {
       if (candidate === null) return;
 
-      const data = JSON.parse(candidate) as SomeObject<boolean[]>;
+      const data = JSON.parseAs<SomeObject<boolean[]>>(candidate);
       let list = data[id];
 
       if (index >= list.length)
@@ -255,7 +260,7 @@ function BaseRepeater<T extends Object>(
       if (candidate === null)
         __save(__push(index), {});
       else {
-        const data = JSON.parse(candidate) as SomeObject<boolean[]>;
+        const data = JSON.parseAs<SomeObject<boolean[]>>(candidate);
         let list = data?.[id] || [];
 
         if (typeof list[index] === "undefined")
@@ -305,20 +310,21 @@ function BaseRepeater<T extends Object>(
   };
 
   return (
-    <div className={scss.wrapper}>
+
+    <div className={style.wrapper}>
       {typeof title !== "undefined" && (
         <div>
           <label className={"form-label"}>{title}</label>
         </div>
       )}
-      <div className={scss.header}>
-        <div className={scss.inner}></div>
-        <div className={scss.inner}>
-          Данные <span className={scss.required}>*</span>
+      <div className={style.header}>
+        <div className={style.inner}></div>
+        <div className={style.inner}>
+          Данные <span className={style.required}>*</span>
         </div>
-        <div className={scss.inner}></div>
+        <div className={style.inner}></div>
       </div>
-      <div className={scss.elements}>
+      <div className={style.elements}>
         {validateDataType() && data.map((item, i) => (
           <ItemRepeater
             index={i}
@@ -332,11 +338,41 @@ function BaseRepeater<T extends Object>(
         ))}
       </div>
 
-      <div className={scss.button} onClick={push}>
-        <button className="btn btn-outline-secondary" type="button">Добавить</button>
+      <div className={style.button}>
+        {asForm && (
+          <button
+            className="btn btn-primary"
+            type={onSubmit ? "submit" : "button"}
+            {...(typeof submitDisabled !== "undefined" ? { disabled: submitDisabled } : {})}
+          >
+            Обновить
+          </button>
+        )}
+
+        <button
+          className="btn btn-outline-secondary"
+          type="button"
+          onClick={push}
+        >
+          Добавить
+        </button>
       </div>
     </div>
   );
+}
+
+// TODO: Сделать проверку на кол-во элементов и если 1 то не покалывать скрывашку
+function BaseRepeater<T extends Object>(props: BaseRepeaterProps<T>) {
+  return props.asForm
+    ? (
+      <form
+        autoComplete="off"
+        {...(props.onSubmit ? { onSubmit: props.onSubmit } : {})}
+      >
+        <ListRepeater {...props} />
+      </form>
+    )
+    : <div><ListRepeater {...props} /></div>
 }
 
 export default BaseRepeater;
